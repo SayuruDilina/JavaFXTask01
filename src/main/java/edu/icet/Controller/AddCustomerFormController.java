@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class AddCustomerFormController implements Initializable {
@@ -44,11 +43,7 @@ public class AddCustomerFormController implements Initializable {
 
     @FXML
     void btnAddOnAction(ActionEvent event) {
-     String id=   txtId.getText();
-     String name= txtName.getText();
-     String address=txtAddress.getText();
-     String title=cmbTitle.getValue();
-     String numb=txtNumber.getText();
+      String numb=txtNumber.getText();
      String dob= String.valueOf(DOB.getValue());
      if (isValidPhoneNumber(numb) && isValidBirthday(dob)) {
          List<Customer> customerList = DBConnection.getInstance().getConnection();
@@ -90,8 +85,7 @@ private boolean isValidBirthday(String birthday){
         LocalDate birthDate = LocalDate.parse(birthday, formatter);
         return birthDate.isBefore(today);
     } catch (DateTimeParseException e) {
-        // Handle the case where the date format is incorrect
-        return false;
+            return false;
     }
 }
 
