@@ -15,7 +15,11 @@ import javafx.stage.Stage;
 import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class AddCustomerFormController implements Initializable {
@@ -40,18 +44,29 @@ public class AddCustomerFormController implements Initializable {
 
     @FXML
     void btnAddOnAction(ActionEvent event) {
-
-     List<Customer> customerList = DBConnection.getInstance().getConnection();
-     customerList.add(new Customer(txtId.getText(),cmbTitle.getValue(),txtName.getText(),txtAddress.getText(),txtNumber.getText(),DOB.getValue()));
-      //System.out.println(customerList);
-        JOptionPane.showMessageDialog(null,"Customer Added Successfully!");
-        txtId.setText("");
-        txtName.setText("");
-        txtAddress.setText("");
-        txtNumber.setText("");
-        cmbTitle.setValue("");
-        DOB.setValue(null);
-
+     String id=   txtId.getText();
+     String name= txtName.getText();
+     String address=txtAddress.getText();
+     String title=cmbTitle.getValue();
+     String numb=txtNumber.getText();
+     String dob= String.valueOf(DOB.getValue());
+     if (isValidPhoneNumber(numb) && isValidBirthday(dob)) {
+         List<Customer> customerList = DBConnection.getInstance().getConnection();
+         customerList.add(new Customer(txtId.getText(), cmbTitle.getValue(), txtName.getText(), txtAddress.getText(), txtNumber.getText(), DOB.getValue()));
+         JOptionPane.showMessageDialog(null, "Customer Added Successfully!");
+         txtId.setText("");
+         txtName.setText("");
+         txtAddress.setText("");
+         txtNumber.setText("");
+         cmbTitle.setValue("");
+         DOB.setValue(null);
+     }else if (!isValidPhoneNumber(numb)){
+         JOptionPane.showMessageDialog(null,"Enter Phone Number again");
+         txtNumber.setText("");
+     }else {
+         JOptionPane.showMessageDialog(null,"Enter Birthday again");
+         DOB.setValue(null);
+     }
     }
 
     @FXML
@@ -64,6 +79,21 @@ public class AddCustomerFormController implements Initializable {
         }
         stage.show();
     }
+private  boolean isValidPhoneNumber(String number){
+
+        return number!=null && number.length()==10;
+}
+private boolean isValidBirthday(String birthday){
+    LocalDate today=LocalDate.now();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    try {
+        LocalDate birthDate = LocalDate.parse(birthday, formatter);
+        return birthDate.isBefore(today);
+    } catch (DateTimeParseException e) {
+        // Handle the case where the date format is incorrect
+        return false;
+    }
+}
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
